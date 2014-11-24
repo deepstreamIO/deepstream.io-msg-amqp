@@ -7,6 +7,9 @@ var AmqpConnector = function( config ) {
 	this.isReady = false;
 	this._name = config.serverName || ( Math.random() * 10000000000000000000 ).toString( 36 );
 	this._exchange = null;
+	this._queues = {};
+	this._messageEventEmitter = new events.EventEmitter();
+
 	this._connection = amqp.createConnection( config );
 	this._connection.on( 'ready', this._init.bind( this ) );
 	this._connection.on( 'error', this._onError.bind( this ) );
@@ -16,10 +19,17 @@ var AmqpConnector = function( config ) {
 util.inherits( AmqpConnector, events.EventEmitter );
 
 AmqpConnector.prototype.subscribe = function( topic, callback ) {
+	this._messageEventEmitter.on( topic, callback );
+
+	if( this._queues[ topic ] === true ) {
+		return;
+	}
+
 	var name = topic + '.' + this._name,
 		options = { autoDelete: true },
-		callbackFn = this._bindListeners.bind( this, topic, callback );
-	
+		callbackFn = this._bindListeners.bind( this, topic );
+
+	this._queues[ topic ] = true;
 	this._connection.queue( name, options, callbackFn );
 };
 
@@ -50,12 +60,12 @@ AmqpConnector.prototype._init = function() {
 	this.emit( 'ready' );
 };
 
-AmqpConnector.prototype._bindListeners = function( topic, callback, queue ) {
-	queue.bind( EXCHANGE_NAME, '#' );
-	queue.subscribe( this._onMessage.bind( this, callback ) );
+AmqpConnector.prototype._bindListeners = function( topic, queue ) {
+	queue.bind( EXCHANGE_NAME, topic );
+	queue.subscribe( this._onMessage.bind( this ) );
 };
 
-AmqpConnector.prototype._onMessage = function( callback, message ) {
+AmqpConnector.prototype._onMessage = function( message, headers, deliveryInfo, messageObject ) {
 	var parsedMessage;
 
 	try{
@@ -70,10 +80,11 @@ AmqpConnector.prototype._onMessage = function( callback, message ) {
 
 	delete parsedMessage.amqpSender;
 	
-	callback( parsedMessage );
+	this._messageEventEmitter.emit( parsedMessage.topic, parsedMessage );
 };
 
-AmqpConnector.prototype._onError = function() {
+AmqpConnector.prototype._onError = function( error ) {
+	throw error;
 	console.log( 'ERROR', arguments ); //@TODO
 };
 
