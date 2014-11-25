@@ -18,6 +18,11 @@ var AmqpConnector = function( config ) {
 
 util.inherits( AmqpConnector, events.EventEmitter );
 
+AmqpConnector.prototype.unsubscribe = function( topic, callback ) {
+	this._messageEventEmitter.removeListener( topic, callback );
+	// @TODO - Destroy queue if no listeners are left
+};
+
 AmqpConnector.prototype.subscribe = function( topic, callback ) {
 	this._messageEventEmitter.on( topic, callback );
 
@@ -79,7 +84,7 @@ AmqpConnector.prototype._onMessage = function( message, headers, deliveryInfo, m
 	}
 
 	delete parsedMessage.amqpSender;
-	
+	console.log( 'CONNECTOR RECEIVE'.yellow, parsedMessage );
 	this._messageEventEmitter.emit( parsedMessage.topic, parsedMessage );
 };
 
