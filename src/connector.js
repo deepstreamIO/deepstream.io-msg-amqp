@@ -84,7 +84,6 @@ AmqpConnector.prototype._onMessage = function( message, headers, deliveryInfo, m
 	}
 
 	delete parsedMessage.amqpSender;
-	console.log( 'CONNECTOR RECEIVE'.yellow, parsedMessage );
 	this._messageEventEmitter.emit( parsedMessage.topic, parsedMessage );
 };
 
