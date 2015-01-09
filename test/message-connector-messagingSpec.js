@@ -15,6 +15,7 @@ describe( 'Messages are send between multiple instances', function(){
 		connectorA = new MessageConnector( settings );
 		expect( connectorA.isReady ).toBe( false );
 		connectorA.on( 'ready', done );
+		connectorA.on( 'error', function( e ){ throw e; });
 	});
 	
 	it( 'creates connectorB', function( done ) {

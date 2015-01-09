@@ -1,6 +1,7 @@
 var amqp = require('amqp'),
 	events = require( 'events' ),
 	util = require( 'util' ),
+	pckg = require( '../package.json' ),
 	EXCHANGE_NAME = 'DEEPSTREAM_PUB_SUB';
 
 /**
@@ -26,8 +27,8 @@ var amqp = require('amqp'),
  */
 var AmqpConnector = function( config ) {
 	this.isReady = false;
-	this.name = 'deepstream.io-msg-amqp';
-	this.version = '0.2.2';
+	this.name = pckg.name;
+	this.version = pckg.version;
 	this._sender = config.serverName || ( Math.random() * 10000000000000000000 ).toString( 36 );
 	this._exchange = null;
 	this._queues = {};

@@ -6,13 +6,12 @@ var MessageConnector = require( '../src/message-connector' ),
 
 describe( 'the message connector has the correct structure', function(){
 	
-	var messageConnector,
-		errorCallback = jasmine.createSpy( 'errorCallback' );
+	var messageConnector;
 	
 	it( 'creates a messageConnector', function( done ){
 		messageConnector = new MessageConnector( settings );
 		expect( messageConnector.isReady ).toBe( false );
-		messageConnector.on( 'error', errorCallback );
+		messageConnector.on( 'error', function( e ){ throw e; });
 		messageConnector.on( 'ready', done );
 	});
 	
