@@ -1,4 +1,4 @@
 deepstream.io-msg-amqp
 ======================
 
-The AMQP connector for deepstream.io
+[deepstream](http://deepstream.io) message connector for amqp broker
