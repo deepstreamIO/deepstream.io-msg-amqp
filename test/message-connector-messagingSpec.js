@@ -1,7 +1,7 @@
 /* global describe, it, expect, jasmine */
 var MessageConnector = require( '../src/message-connector' ),
 	settings = { port: 5672, host: 'localhost' },
-	MESSAGE_TIME = 20;
+	MESSAGE_TIME = 200;
 
 describe( 'Messages are send between multiple instances', function(){
 	var connectorA,

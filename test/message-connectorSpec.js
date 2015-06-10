@@ -2,7 +2,7 @@
 var MessageConnector = require( '../src/message-connector' ),
 	EventEmitter = require( 'events' ).EventEmitter,
 	settings = { port: 5672, host: 'localhost' },
-	MESSAGE_TIME = 20;
+	MESSAGE_TIME = 200;
 
 describe( 'the message connector has the correct structure', function(){
 	
