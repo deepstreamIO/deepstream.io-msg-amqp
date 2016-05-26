@@ -13,11 +13,11 @@
   "author": "Wolfram Hempel",
   "license": "MIT",
   "dependencies": {
-    "amqp": "0.2.0"
+    "amqp": "0.2.4"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
-    "grunt-release": "0.9.0",
+    "grunt-release": "0.13.0",
     "jasmine-node": "1.14.5"
   },
   "bugs": {
