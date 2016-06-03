@@ -13,7 +13,7 @@
   "author": "Wolfram Hempel",
   "license": "MIT",
   "dependencies": {
-    "amqp": "0.2.4"
+    "amqp": "0.2.5"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
