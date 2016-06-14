@@ -1,8 +1,8 @@
 var amqp = require('amqp'),
-	events = require( 'events' ),
-	util = require( 'util' ),
-	pckg = require( '../package.json' ),
-	EXCHANGE_NAME = 'DEEPSTREAM_PUB_SUB';
+  events = require( 'events' ),
+  util = require( 'util' ),
+  pckg = require( '../package.json' ),
+  EXCHANGE_NAME = 'DEEPSTREAM_PUB_SUB'
 
 /**
  * Connects deepstreams messaging to an AMQP broker (ActiveMQ, Qpid, HornetQ, RabbitMQ etc.)
@@ -18,30 +18,27 @@ var amqp = require('amqp'),
  * This connector uses the node amqp library (https://www.npmjs.com/package/amqp). Please consult its website for
  * configuration options
  *
- * @author Wolfram Hempel
- * @copyright 2015 Hoxton One Ltd.
- * 
  * @param {Object} config Connection configuration. Basically all options listed on https://www.npmjs.com/package/amqp plus serverName
  *
  * @constructor
  */
 var AmqpConnector = function( config ) {
-	this.isReady = false;
-	this.name = pckg.name;
-	this.version = pckg.version;
-	this._sender = config.serverName || ( Math.random() * 10000000000000000000 ).toString( 36 );
-	this._exchange = null;
-	this._queues = {};
-	this._messageEventEmitter = new events.EventEmitter();
+  this.isReady = false
+  this.name = pckg.name
+  this.version = pckg.version
+  this._sender = config.serverName || ( Math.random() * 10000000000000000000 ).toString( 36 )
+  this._exchange = null
+  this._queues = {}
+  this._messageEventEmitter = new events.EventEmitter()
 
-	this._validateConfig( config );
-	this._connection = amqp.createConnection( config );
-	this._connection.on( 'ready', this._init.bind( this ) );
-	this._connection.on( 'error', this._onError.bind( this ) );
-	this._connection.on( 'close', this._onClose.bind( this ) );
-};
+  this._validateConfig( config )
+  this._connection = amqp.createConnection( config )
+  this._connection.on( 'ready', this._init.bind( this ) )
+  this._connection.on( 'error', this._onError.bind( this ) )
+  this._connection.on( 'close', this._onClose.bind( this ) )
+}
 
-util.inherits( AmqpConnector, events.EventEmitter );
+util.inherits( AmqpConnector, events.EventEmitter )
 
 /**
  * Removes a listener for a topic. If all listeners for the topic
@@ -57,17 +54,17 @@ util.inherits( AmqpConnector, events.EventEmitter );
  * @returns {void}
  */
 AmqpConnector.prototype.unsubscribe = function( topic, callback ) {
-	this._messageEventEmitter.removeListener( topic, callback );
+  this._messageEventEmitter.removeListener( topic, callback )
 
-	if( this._messageEventEmitter.listeners( topic ).length === 0 ) {
-		this._queues[ topic ].queue.unbind( EXCHANGE_NAME, topic );
-		delete this._queues[ topic ];
-	}
-};
+  if( this._messageEventEmitter.listeners( topic ).length === 0 ) {
+    this._queues[ topic ].queue.unbind( EXCHANGE_NAME, topic )
+    delete this._queues[ topic ]
+  }
+}
 
 /**
  * Adds a listener for a topic.
- * 
+ *
  * If this is the first listener for the topic, a new queue will be
  * requested (or an existing one) and the client will bind itself as a listener to it
  *
@@ -78,19 +75,19 @@ AmqpConnector.prototype.unsubscribe = function( topic, callback ) {
  * @returns {void}
  */
 AmqpConnector.prototype.subscribe = function( topic, callback ) {
-	this._messageEventEmitter.on( topic, callback );
+  this._messageEventEmitter.on( topic, callback )
 
-	if( this._queues[ topic ] ) {
-		return;
-	}
+  if( this._queues[ topic ] ) {
+    return
+  }
 
-	var name = topic + '.' + this._sender,
-		options = { autoDelete: true },
-		callbackFn = this._onQueue.bind( this, topic );
+  var name = topic + '.' + this._sender,
+    options = { autoDelete: true },
+    callbackFn = this._onQueue.bind( this, topic )
 
-	this._queues[ topic ] = { created: true };
-	this._connection.queue( name, options, callbackFn );
-};
+  this._queues[ topic ] = { created: true }
+  this._connection.queue( name, options, callbackFn )
+}
 
 /**
  * Publish a message on the queue.
@@ -105,18 +102,18 @@ AmqpConnector.prototype.subscribe = function( topic, callback ) {
  * @returns {void}
  */
 AmqpConnector.prototype.publish = function( topic, message ) {
-	var stringifiedMessage;
+  var stringifiedMessage
 
-	message._s = this._sender;
+  message._s = this._sender
 
-	try{
-		stringifiedMessage = JSON.stringify( message );
-	} catch( e ) {
-		this.emit( 'error', e.toString() );
-	}
+  try{
+    stringifiedMessage = JSON.stringify( message )
+  } catch( e ) {
+    this.emit( 'error', e.toString() )
+  }
 
-	this._exchange.publish( topic, stringifiedMessage );
-};
+  this._exchange.publish( topic, stringifiedMessage )
+}
 
 /**
  * Callback for established connections.
@@ -128,10 +125,10 @@ AmqpConnector.prototype.publish = function( topic, message ) {
  * @returns {void}
  */
 AmqpConnector.prototype._init = function() {
-	this._exchange = this._connection.exchange( EXCHANGE_NAME, { type: 'topic' } );
-	this.isReady = true;
-	this.emit( 'ready' );
-};
+  this._exchange = this._connection.exchange( EXCHANGE_NAME, { type: 'topic' } )
+  this.isReady = true
+  this.emit( 'ready' )
+}
 
 /**
  * Callback for created / returned queues.
@@ -146,10 +143,10 @@ AmqpConnector.prototype._init = function() {
  * @returns {void}
  */
 AmqpConnector.prototype._onQueue = function( topic, queue ) {
-	this._queues[ topic ].queue = queue;
-	queue.bind( EXCHANGE_NAME, topic );
-	queue.subscribe( this._onMessage.bind( this ) );
-};
+  this._queues[ topic ].queue = queue
+  queue.bind( EXCHANGE_NAME, topic )
+  queue.subscribe( this._onMessage.bind( this ) )
+}
 
 /**
  * Callback for incoming messages.
@@ -160,25 +157,25 @@ AmqpConnector.prototype._onQueue = function( topic, queue ) {
  * @param   {Object} headers       Meta information added by the sender - should be empty
  * @param   {Object} deliveryInfo  Meta information, added by the AMQP broker
  * @param   {MessageObject} messageObject An object, exposing methods to ack the message etc.
- * 
+ *
  * @private
  * @returns {void}
  */
 AmqpConnector.prototype._onMessage = function( message, headers, deliveryInfo, messageObject ) {
-	var parsedMessage;
+  var parsedMessage
 
-	try{
-		parsedMessage = JSON.parse( message.data.toString( 'utf-8' )  );
-	} catch( e ) {
-		this.emit( 'error', 'message parse error ' + e.toString() );
-	}
+  try{
+    parsedMessage = JSON.parse( message.data.toString( 'utf-8' )  )
+  } catch( e ) {
+    this.emit( 'error', 'message parse error ' + e.toString() )
+  }
 
-	if( parsedMessage._s === this._sender ) {
-		return;
-	}
-	delete parsedMessage._s;
-	this._messageEventEmitter.emit( deliveryInfo.routingKey, parsedMessage );
-};
+  if( parsedMessage._s === this._sender ) {
+    return
+  }
+  delete parsedMessage._s
+  this._messageEventEmitter.emit( deliveryInfo.routingKey, parsedMessage )
+}
 
 /**
  * Callback for error messages
@@ -189,22 +186,22 @@ AmqpConnector.prototype._onMessage = function( message, headers, deliveryInfo, m
  * @returns {void}
  */
 AmqpConnector.prototype._onError = function( error ) {
-	this.emit( 'error', error.toString() );
-};
+  this.emit( 'error', error.toString() )
+}
 
 /**
  * Callback for closed connections. The only time the connection
  * is expected to close is when deepstream is shut down - so lets
  * raise an error if it happens at some other point
- * 
+ *
  * @param   {String} error
  *
  * @private
  * @returns {void}
  */
 AmqpConnector.prototype._onClose = function() {
-	this.emit( 'error', 'disconnected' );
-};
+  this.emit( 'error', 'disconnected' )
+}
 
 /**
  * Check that the configuration contains all mandatory parameters
@@ -215,13 +212,13 @@ AmqpConnector.prototype._onClose = function() {
  * @returns {void}
  */
 AmqpConnector.prototype._validateConfig = function( config ) {
-	if( typeof config.host !== 'string' ) {
-		throw new Error( 'Missing config parameter "host"' );
-	}
+  if( typeof config.host !== 'string' ) {
+    throw new Error( 'Missing config parameter "host"' )
+  }
 
-	if( typeof config.port !== 'number' ) {
-		throw new Error( 'Missing config parameter "port"' );
-	}
-};
+  if( typeof config.port !== 'number' ) {
+    throw new Error( 'Missing config parameter "port"' )
+  }
+}
 
-module.exports = AmqpConnector;
+module.exports = AmqpConnector
