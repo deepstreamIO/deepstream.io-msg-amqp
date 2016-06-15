@@ -1,0 +1,6 @@
+plugins:
+  message:
+    name: amqp
+    options:
+      host: ${AMQP_HOST}
+      port: ${AMQP_PORT}
