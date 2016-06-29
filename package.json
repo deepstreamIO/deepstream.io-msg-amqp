@@ -1,6 +1,6 @@
 {
   "name": "deepstream.io-msg-amqp",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "description": "[deepstream](http://deepstream.io) message connector for amqp broker",
   "main": "src/message-connector.js",
   "scripts": {
