@@ -1,5 +1,5 @@
 environment:
-  AMQP_PORT: 54.93.183.16
+  AMQP_PORT: 54.93.147.100
 
 # Do not insert any code under here without making sures it's in publishingtest first
 os:
