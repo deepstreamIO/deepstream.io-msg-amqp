@@ -5,6 +5,8 @@ A [deepstream.io](http://deepstream.io/) message connector for [amqp](https://ww
 This connector uses [the npm amqp package](https://www.npmjs.com/package/amqp). Please have a look there for detailed options.
 
 ##Basic Setup
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/deepstreamIO/deepstream.io-msg-amqp.svg)](https://greenkeeper.io/)
 ```yaml
 plugins:
   message:
