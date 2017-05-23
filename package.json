@@ -23,7 +23,7 @@
     "coveralls": "^2.11.11",
     "istanbul": "^0.4.3",
     "mocha": "^3.0.0",
-    "sinon": "^1.17.4",
+    "sinon": "^2.3.1",
     "sinon-chai": "^2.8.0"
   },
   "bugs": {
